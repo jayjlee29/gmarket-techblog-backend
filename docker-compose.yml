@@ -16,6 +16,7 @@ services:
     command: "/opt/build/gradlew copyDeps --gradle-user-home=/opt/.gradle -x test"
   nginx:
     image: nginx
+    restart: always
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     ports:
