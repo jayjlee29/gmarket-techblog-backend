@@ -10,3 +10,17 @@ docker compose up builder
 ```shell
 docker compose up api subscriber nginx redis
 ```
+
+
+## 확인
+
+- subscribing
+
+```bash
+curl "http://sub.gmarket.co.kr/subscribe/mytopic"
+```
+
+- publishing
+```bash
+curl "http://pub.gmarket.co.kr/publish/mytopic?payload=hello"
+```
