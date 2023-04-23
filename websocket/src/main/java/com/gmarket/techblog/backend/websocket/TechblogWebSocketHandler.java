@@ -7,6 +7,7 @@ import org.springframework.data.redis.connection.ReactiveSubscription;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.ReactiveRedisMessageListenerContainer;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Flux;
@@ -16,7 +17,7 @@ import javax.annotation.PostConstruct;
 
 @Slf4j
 @Component
-public class WebSocketHandler implements org.springframework.web.reactive.socket.WebSocketHandler {
+public class TechblogWebSocketHandler implements WebSocketHandler {
 
     @Autowired
     private ReactiveRedisConnectionFactory connectionFactory;

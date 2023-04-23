@@ -12,14 +12,14 @@ import java.util.Map;
 
 @Slf4j
 @Configuration
-public class WebSocketConfig {
+public class TechblogWebSocketConfig {
     @Autowired
-    WebSocketHandler webSocketHandler;
+    TechblogWebSocketHandler techblogWebSocketHandler;
 
     @Bean
     public HandlerMapping webSocketHandlerMapping() {
         Map<String, org.springframework.web.reactive.socket.WebSocketHandler> map = new HashMap<>();
-        map.put("/ws", webSocketHandler);
+        map.put("/ws", techblogWebSocketHandler);
         int order = -1; // before annotated controllers
         return new SimpleUrlHandlerMapping(map, order);
     }
