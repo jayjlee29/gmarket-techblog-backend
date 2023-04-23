@@ -17,7 +17,8 @@ public class ApiController {
     }
     @GetMapping("/publish/{topic}")
     public Mono<Boolean> publishMessage(@PathVariable("topic") String topic, @RequestParam String payload) {
-        log.info("22222");
+
+        log.info("{} : {}", topic, payload);
         return redisPublisher.publish(topic, payload);
     }
 }

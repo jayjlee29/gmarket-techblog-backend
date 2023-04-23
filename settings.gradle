@@ -1,2 +1,2 @@
 rootProject.name = 'techblog-backend'
-include "subscriber", "api"
+include "subscriber", "api", "websocket"

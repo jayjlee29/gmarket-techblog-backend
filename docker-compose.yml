@@ -1,5 +1,19 @@
 version: '3.9'
 services:
+  cleanBuilder:
+    image: azul/zulu-openjdk:11
+    volumes:
+      - .:/opt/build
+      - type: volume
+        source: app_home
+        target: /opt/app
+        volume:
+          nocopy: true
+      - type: volume
+        source: gradle_home
+        target: /opt/.gradle:rw
+    working_dir: /opt/build
+    command: "/opt/build/gradlew cleanDeps copyDeps --gradle-user-home=/opt/.gradle -x test"
   builder:
     image: azul/zulu-openjdk:11
     volumes:
@@ -50,6 +64,22 @@ services:
         condition: service_started
 #      builder:
 #        condition: service_completed_successfully
+      redis:
+        condition: service_started
+    restart: always
+  websocket:
+    build:
+      context: websocket
+      dockerfile: Dockerfile
+    deploy:
+      replicas: 2
+    volumes:
+      - app_home:/opt/app
+    depends_on:
+      nginx:
+        condition: service_started
+      #      builder:
+      #        condition: service_completed_successfully
       redis:
         condition: service_started
     restart: always
