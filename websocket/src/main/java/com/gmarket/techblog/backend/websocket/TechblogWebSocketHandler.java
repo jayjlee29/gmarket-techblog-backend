@@ -1,5 +1,6 @@
 package com.gmarket.techblog.backend.websocket;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
@@ -14,32 +15,31 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
+import java.util.Optional;
 
 @Slf4j
 @Component
 public class TechblogWebSocketHandler implements WebSocketHandler {
 
     @Autowired
-    private ReactiveRedisConnectionFactory connectionFactory;
-
     private ReactiveRedisMessageListenerContainer reactiveMsgListenerContainer;
 
-    @PostConstruct
-    void init() {
-        log.info("init ReactiveRedisMessageListenerContainer ");
-        reactiveMsgListenerContainer = new ReactiveRedisMessageListenerContainer(connectionFactory);
-
-    }
+    @Autowired
+    private TechblogChatService techblogChatService;
 
     @Override
     public Mono<Void> handle(WebSocketSession webSocketSession) {
+        String sessionId = webSocketSession.getId();
+
         Flux<WebSocketMessage> output = webSocketSession.receive()
-                .doOnNext(message -> {
-                    log.info("new message received {} - {}", webSocketSession.getId(), message.getPayloadAsText());
-                })
-                .flatMap(message -> {
-                    //return webSocketSession.textMessage("Echo " + value);
-                    String topic = message.getPayloadAsText();
+            .doFirst(()->{
+                log.info("connect - new session {}", sessionId);
+            })
+            .flatMap(message->{
+                String topic = message.getPayloadAsText();
+                log.info("message - {} topic is {}", sessionId, message.getPayloadAsText());
+
+                return techblogChatService.addTopic(sessionId, topic).flatMapMany(it->{
                     return reactiveMsgListenerContainer
                             .receive(ChannelTopic.of(topic))
                             .map(ReactiveSubscription.Message::getMessage)
@@ -47,6 +47,17 @@ public class TechblogWebSocketHandler implements WebSocketHandler {
                                 return webSocketSession.textMessage("Echo : " + msg);
                             });
                 });
+
+            })
+            .doFinally(sig -> {
+                log.info("close - terminating ession (client side) sig: [{}], [{}]", sig.name(), sessionId);
+                techblogChatService.remove(sessionId);
+                webSocketSession.close();
+
+            })
+            .doOnError(err->{
+                log.error("doOnError", err);
+            });
 
         return webSocketSession.send(output);
     }
