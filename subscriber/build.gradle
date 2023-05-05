@@ -25,6 +25,8 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
     developmentOnly "org.springframework.boot:spring-boot-devtools"
+
+    implementation 'io.projectreactor:reactor-tools'
 }
 
 tasks.named('test') {
@@ -41,4 +43,8 @@ task copyDeps(type: Copy) {
     from(sourceSets.main.runtimeClasspath)
     includeEmptyDirs = false
     into('/opt/app/subscriber/classes/')
+}
+
+task cleanDeps(type: Delete) {
+    delete '/opt/app/subscriber/classes/'
 }

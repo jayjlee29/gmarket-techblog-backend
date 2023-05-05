@@ -46,3 +46,7 @@ task copyDeps(type: Copy) {
 	includeEmptyDirs = false
 	into('/opt/app/api/classes/')
 }
+
+task cleanDeps(type: Delete) {
+	delete '/opt/app/api/classes/'
+}
