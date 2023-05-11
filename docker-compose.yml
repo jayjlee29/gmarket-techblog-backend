@@ -37,6 +37,7 @@ services:
       - 80:80
       - 5005:5005
       - 5006:5006
+      - 5007:5007
   redis:
     image: redis:6.2.6
   subscriber:
